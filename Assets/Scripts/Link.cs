@@ -9,24 +9,31 @@ public class Link : MonoBehaviour {
 		LEFT
 	};
 
+	public LevelObject LevelObject;
+
 	public float MaxSpeed = 1.0f;
 	public float JumpForce = 140.0f;
 	public AudioClip AttackSFX = null;
 
 	protected Animator m_Animator;
-	protected LevelObject m_LevelObject;
-
 	protected Facing m_Facing;
 	protected bool m_Crouching;
+	protected bool m_Attacking;
 
+	void Awake()
+	{
+		m_Animator = GetComponent<Animator> ();
+		m_Facing = Facing.RIGHT;
+		m_Crouching = false;
+		m_Attacking = false;
+	}
 
 	// Use this for initialization
 	void Start () {
 		m_Facing = Facing.RIGHT;
 		m_Crouching = false;
 		m_Animator = GetComponent<Animator> ();
-		m_LevelObject = GameObject.Find ("Level").GetComponent<LevelObject> ();
-		Transform startObj = m_LevelObject.StartLocation; 
+		Transform startObj = LevelObject.StartLocation; 
 
 		rigidbody2D.position = startObj.position;
 
@@ -63,7 +70,8 @@ public class Link : MonoBehaviour {
 		if (Input.GetButtonDown ("Jump")) {
 			rigidbody2D.AddForce (new Vector2(0.0f, JumpForce));
 		}
-		if (Input.GetButtonDown ("Fire1")) {
+		if (!m_Attacking && Input.GetButtonDown ("Fire1")) {
+			m_Attacking = true;
 			m_Animator.SetTrigger ("Attack");
 			audio.PlayOneShot (AttackSFX);
 		}
@@ -79,5 +87,20 @@ public class Link : MonoBehaviour {
 		}
 	}
 
+	void OnAttackDone(){
+		m_Attacking = false;
+	}
 
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		transform.parent = other;
+		//elevator = other.GetComponent<Elevator> ();
+		//if (elevator != null) {
+		//}
+	}
+
+	void OnTriggerExit2D(Collider2D other)
+	{
+		transform.parent = null;
+	}
 }
