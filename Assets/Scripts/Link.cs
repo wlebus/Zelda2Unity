@@ -20,6 +20,8 @@ public class Link : MonoBehaviour {
 	protected bool m_Crouching;
 	protected bool m_Attacking;
 
+	protected Transform m_CurrElevator;
+
 	void Awake()
 	{
 		m_Animator = GetComponent<Animator> ();
@@ -55,12 +57,17 @@ public class Link : MonoBehaviour {
 			rigidbody2D.velocity = new Vector2 (move * MaxSpeed, rigidbody2D.velocity.y);
 		}
 
-		
 		if (move > 0.0f && m_Facing != Facing.RIGHT) {
 			ChangeFacing (Facing.RIGHT);
 		}
 		else if (move < 0.0f && m_Facing != Facing.LEFT) {
 			ChangeFacing (Facing.LEFT);
+		}
+
+		if(m_CurrElevator != null){
+			Vector2 newPos = transform.position;
+			newPos.y = m_CurrElevator.transform.position.y;
+			rigidbody2D.position = newPos;
 		}
 
 	}
@@ -93,14 +100,19 @@ public class Link : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		transform.parent = other;
-		//elevator = other.GetComponent<Elevator> ();
-		//if (elevator != null) {
-		//}
+		if(other.GetComponent<Elevator>()){
+			m_CurrElevator = other.GetComponent<Transform>();
+			//transform.parent = other.GetComponent<Transform>();
+			//rigidbody2D.isKinematic = true;
+		}
 	}
 
 	void OnTriggerExit2D(Collider2D other)
 	{
-		transform.parent = null;
+		if(other.GetComponent<Elevator>()){
+			m_CurrElevator = null;
+			//transform.parent = null;
+			//rigidbody2D.isKinematic = false;
+		}
 	}
 }
