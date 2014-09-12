@@ -2,7 +2,6 @@
 using System.Collections;
 
 public class Elevator : MonoBehaviour {
-
 	public Transform Top;
 	public Transform Bottom;
 	public float Speed = 1.0f;
@@ -14,10 +13,7 @@ public class Elevator : MonoBehaviour {
 
 	// Update is called once per frame
 	void FixedUpdate () {
-
 		float vert = Input.GetAxis ("Vertical");
-
-
 
 		Vector3 newPos = transform.position;
 		newPos.y += vert * Speed;
